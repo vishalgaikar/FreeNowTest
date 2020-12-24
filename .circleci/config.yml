@@ -30,7 +30,6 @@ jobs:
           command: ./gradlew lint test
       - run:
           name: Setup emulator
-          system-images/android-29/google_apis_playstore/x86/
           command: sdkmanager "system-images;android-29;google_apis_playstore;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-29;google_apis_playstore;armeabi-v7a
       - run:
           name: Launch emulator
