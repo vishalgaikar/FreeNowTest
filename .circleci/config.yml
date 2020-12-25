@@ -9,9 +9,6 @@ jobs:
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     environment:
       JVM_OPTS: -Xmx3200m
-      ANDROID_HOME: ${ANDROID_HOME}
-      java:
-      version: oraclejdk8
     steps:
       - checkout
       - restore_cache:
@@ -33,7 +30,7 @@ jobs:
           command: sdkmanager "system-images;android-29;google_apis;x86_64" && echo "no" | avdmanager create avd -n test -k "system-images;android-29;google_apis;x86_64"
       - run:
           name: Launch emulator
-          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator -avd test -noaudio -no-boot-anim -no-window -accel on
+          command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator -avd test -gpu -noaudio -no-boot-anim -no-window -accel on
           background: true
       - run:
           name: Wait emulator
