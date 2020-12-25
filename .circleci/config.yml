@@ -26,11 +26,6 @@ jobs:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
-          name: Lists installed targets
-          command: android list target
-          environment:
-          TERM: dumb
-      - run:
           name: Show list of system-images
           command: sdkmanager --list --verbose | grep system-images
       - run:
