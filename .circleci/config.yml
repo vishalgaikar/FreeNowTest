@@ -3,49 +3,32 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: bitriseio/docker-android:v2017_09_09-06_45-b744
+      - image: circleci/android:api-25-alpha
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      #      - run:
+      #         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+      #         command: sudo chmod +x ./gradlew
       - run:
-          name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-          command: sudo chmod +x ./gradlew
-
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
-          command: echo y | android update sdk -u -a -t tools
-      - run:
-          command: echo y | android update sdk -u -a -t platform-tools
-      - run:
-          command: echo y | android update sdk -u -a -t build-tools-25.0.2
-      - run:
-          command: echo y | android update sdk -u -a -t android-25
-
-      - run:
-          name: List available targets and other sdk modules
-          command: sdkmanager --list --include_obsolete --verbose
-      - run:
-          command: echo y | node --version
-      - run:
-          command: echo y | npm --version
-      - run:
-          command: sudo npm i -g appium --unsafe-perm=true --allow-root
-      - run:
-          name: List available targets and other sdk modules
-          command: sdkmanager --list --include_obsolete --verbose
-      - run:
-          command: echo no | avdmanager create avd -n test -k "system-images;android-25;google_apis;armeabi-v7a"
-      - run:
-          command: /opt/android-sdk-linux/emulator/emulator -avd test -no-audio -no-window -no-boot-anim  -accel on
-          background: true
-
-      - run:
-          command: adb shell input keyevent 82
-      - run:
-          command: adb devices
-      - run:
-          command: echo y | adb devices
-      - run:
-          name: Run Tests
-          command: ./gradlew clean build uiAutomationTest -x test -x signArchives
+          name: Run EspressoTests
+          command: ./gradlew connectedAndroidTest
+      - store_artifacts: # for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+          path: app/build/reports
+          destination: reports
+      - store_test_results: # for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+          path: app/build/test-results
       # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
