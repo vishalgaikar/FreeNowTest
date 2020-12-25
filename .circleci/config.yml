@@ -9,8 +9,6 @@ jobs:
           password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
     environment:
       JVM_OPTS: -Xmx3200m
-   machine:
-      environment:
       ANDROID_HOME: /home/ubuntu/android
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       java:
