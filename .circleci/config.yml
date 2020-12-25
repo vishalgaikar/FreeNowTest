@@ -1,4 +1,12 @@
-machine:
+version: 2
+jobs:
+  build:
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-29
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD  # context / project UI env-var reference
   environment:
     PATH: "~/$AndroidDemo/gradle-2.9/bin:$PATH"
     TERM: "dumb"
